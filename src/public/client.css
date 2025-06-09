@@ -1,6 +1,5 @@
 body {
   background-color: hsl(0, 0%, 12%);
-  cursor: none;
   margin: 0;
   overflow: hidden;
 }
@@ -23,4 +22,7 @@ body {
   font-family: sans-serif;
   font-size: 3vw;
   pointer-events: none;
+}
+canvas {
+  background-color: black;
 }
