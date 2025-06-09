@@ -1,6 +1,6 @@
 import { DefaultEventsMap, Socket } from 'socket.io'
 import { Game } from './game'
-import { PlayerSummary } from './summaries/playerSummary'
+import { Summary } from './summary'
 
 type DefaultSocket = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 
@@ -17,14 +17,15 @@ export class Player {
     this.team = game.getSmallTeam()
   }
 
-  summarize (oldTime: number): PlayerSummary {
-    const summary = new PlayerSummary()
+  summarize (): Summary {
+    const summary = new Summary()
     summary.gameToken = this.game.token
     summary.simToken = this.game.simulation.token
     summary.time = this.game.simulation.time
     summary.team = this.team
-    summary.units = this.game.simulation.units.map(unit => unit.summarize(oldTime))
-    summary.border = this.game.simulation.arena.vertices
+    summary.histories = this.game.simulation.units.map(unit => {
+      return unit.history.filter((_, i) => i % 10 === 0)
+    })
     return summary
   }
 }

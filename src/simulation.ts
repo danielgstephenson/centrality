@@ -4,11 +4,13 @@ import { Arena } from './actors/arena'
 import { Unit } from './actors/unit'
 import { Game } from './game'
 import { range, runif } from './math'
+import { Roster } from './roster'
 
 export class Simulation {
   world = new World()
   actors = new Map<string, Actor>()
   arena = new Arena(this)
+  roster = new Roster()
   units: Unit[] = []
   token = String(Math.random())
   step = 0
@@ -34,16 +36,12 @@ export class Simulation {
   }
 
   makeUnits (): void {
-    const a = 0.1 * Arena.size
-    const b = 0.9 * Arena.size
-    const v00 = new Vec2(a, a)
-    const v01 = new Vec2(b, b)
-    const v10 = new Vec2(a, b)
-    const v11 = new Vec2(b, a)
-    this.units.push(new Unit(this, v00, 0, 0))
-    this.units.push(new Unit(this, v01, 1, 0))
-    this.units.push(new Unit(this, v10, 1, 1))
-    this.units.push(new Unit(this, v11, 0, 1))
+    range(4).forEach(i => {
+      const spawnPoint = this.roster.spawnPoints[i]
+      const team = this.roster.teams[i]
+      const role = this.roster.roles[i]
+      this.units.push(new Unit(this, spawnPoint, team, role))
+    })
   }
 
   tick (): void {

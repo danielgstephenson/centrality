@@ -1,13 +1,12 @@
 import { Circle, Fixture, Vec2 } from 'planck'
 import { Simulation } from '../simulation'
 import { Actor } from './actor'
-import { Entry } from '../entry'
-import { UnitSummary } from '../summaries/unitSummary'
+import { range } from '../math'
 
 export class Unit extends Actor {
   static radius = 0.5
-  static recall = 3
-  history: Entry[] = []
+  static recall = 200
+  history: Vec2[] = []
   fixture: Fixture
   team: number
   role: number
@@ -23,6 +22,7 @@ export class Unit extends Actor {
     this.team = team
     this.role = role
     this.spawnPoint = position.clone()
+    this.history = range(Unit.recall).map(_ => this.spawnPoint.clone())
     this.body.setPosition(this.spawnPoint)
     this.fixture = this.body.createFixture({
       shape: new Circle(new Vec2(0, 0), Unit.radius),
@@ -39,19 +39,9 @@ export class Unit extends Actor {
 
   postStep (dt: number): void {
     super.postStep(dt)
-    if (this.simulation.step % 2 !== 0) return
-    const newEntry = new Entry(this)
-    this.history.push(newEntry)
-    this.history = this.history.filter(entry => entry.time > this.simulation.time - Unit.recall)
-  }
-
-  summarize (oldTime: number): UnitSummary {
-    const summary = new UnitSummary()
-    summary.spawnPoint = this.spawnPoint
-    summary.team = this.team
-    summary.role = this.role
-    summary.history = this.history.filter(entry => entry.time > oldTime)
-    summary.position = this.body.getPosition().clone()
-    return summary
+    const position = this.body.getPosition().clone()
+    this.history[0] = position
+    this.history.unshift(position)
+    this.history = this.history.slice(0, Unit.recall)
   }
 }
