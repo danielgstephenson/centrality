@@ -6,7 +6,7 @@ import { UnitSummary } from '../summaries/unitSummary'
 
 export class Unit extends Actor {
   static radius = 0.5
-  static recall = 5
+  static recall = 3
   history: Entry[] = []
   fixture: Fixture
   team: number
@@ -27,7 +27,7 @@ export class Unit extends Actor {
     this.fixture = this.body.createFixture({
       shape: new Circle(new Vec2(0, 0), Unit.radius),
       friction: 0,
-      restitution: 0.7
+      restitution: 1
     })
     this.fixture.setUserData(this)
     this.body.setMassData({
@@ -39,6 +39,7 @@ export class Unit extends Actor {
 
   postStep (dt: number): void {
     super.postStep(dt)
+    if (this.simulation.step % 2 !== 0) return
     const newEntry = new Entry(this)
     this.history.push(newEntry)
     this.history = this.history.filter(entry => entry.time > this.simulation.time - Unit.recall)

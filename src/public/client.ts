@@ -24,6 +24,7 @@ export class Client {
     this.socket.on('update', (summary: PlayerSummary) => {
       this.checkGameToken(summary)
       this.readSummary(summary)
+      this.renderer.draw()
     })
   }
 

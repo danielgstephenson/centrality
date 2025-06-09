@@ -18,12 +18,13 @@ export class Renderer {
   }
 
   draw (): void {
-    window.requestAnimationFrame(() => this.draw())
+    // window.requestAnimationFrame(() => this.draw())
     this.setupCanvas()
+    this.drawTrails()
     this.drawUnits()
   }
 
-  drawUnits (): void {
+  drawTrails (): void {
     const lengths = this.client.units.map(unit => unit.history.length)
     const minLength = Math.min(...lengths)
     const maxTime = this.client.summary.time
@@ -32,7 +33,7 @@ export class Renderer {
         const entry = unit.history[i]
         this.resetContext()
         const age = (maxTime - entry.time) / Unit.recall
-        this.context.globalAlpha = 0.02
+        this.context.globalAlpha = 0.1
         this.context.fillStyle = this.colors[unit.team]
         this.context.beginPath()
         const x = entry.position.x
@@ -41,6 +42,9 @@ export class Renderer {
         this.context.fill()
       })
     })
+  }
+
+  drawUnits (): void {
     this.client.units.forEach(unit => {
       this.resetContext()
       this.context.globalAlpha = 1
@@ -57,22 +61,6 @@ export class Renderer {
       this.context.fill()
     })
   }
-
-  // drawUnit (unit: UnitSummary): void {
-  //   const times = unit.history.map(entry => entry.time)
-  //   const maxTime = Math.max(...times)
-  //   unit.history.forEach(entry => {
-  //     this.resetContext()
-  //     const age = (maxTime - entry.time) / Unit.recall
-  //     this.context.globalAlpha = age === 0 ? 1 : 0.05 * (1 - age)
-  //     this.context.fillStyle = this.colors[unit.team]
-  //     this.context.beginPath()
-  //     const x = entry.position.x
-  //     const y = entry.position.y
-  //     this.context.arc(x, y, Unit.radius, 0, 2 * Math.PI)
-  //     this.context.fill()
-  //   })
-  // }
 
   setupCanvas (): void {
     const min = Math.min(window.innerWidth, window.innerHeight)

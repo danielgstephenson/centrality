@@ -11,6 +11,7 @@ export class Simulation {
   arena = new Arena(this)
   units: Unit[] = []
   token = String(Math.random())
+  step = 0
   time: number
   game: Game
   timeScale: number
@@ -29,7 +30,7 @@ export class Simulation {
       unit.body.setLinearVelocity(velocities[i])
     })
     this.time = performance.now() / 1000
-    setInterval(() => this.step(), 30)
+    setInterval(() => this.tick(), 30)
   }
 
   makeUnits (): void {
@@ -45,12 +46,13 @@ export class Simulation {
     this.units.push(new Unit(this, v11, 0, 1))
   }
 
-  step (): void {
+  tick (): void {
     const oldTime = this.time
     this.time = performance.now() / 1000
     const dt = this.timeScale * (this.time - oldTime)
     this.actors.forEach(actor => actor.preStep(dt))
     this.world.step(dt)
     this.actors.forEach(actor => actor.postStep(dt))
+    this.step += 1
   }
 }
