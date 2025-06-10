@@ -5,7 +5,7 @@ import { range } from '../math'
 
 export class Unit extends Actor {
   static radius = 0.5
-  static recall = 200
+  static recall = 25
   static trailStep = 5
   history: Vec2[] = []
   fixture: Fixture

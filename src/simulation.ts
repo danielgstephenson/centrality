@@ -32,7 +32,7 @@ export class Simulation {
       unit.body.setLinearVelocity(velocities[i])
     })
     this.time = performance.now() / 1000
-    setInterval(() => this.tick(), 30)
+    setInterval(() => this.tick(), 50 / this.timeScale)
   }
 
   makeUnits (): void {
@@ -47,7 +47,7 @@ export class Simulation {
   tick (): void {
     const oldTime = this.time
     this.time = performance.now() / 1000
-    const dt = this.timeScale * (this.time - oldTime)
+    const dt = (this.time - oldTime)
     this.actors.forEach(actor => actor.preStep(dt))
     this.world.step(dt)
     this.actors.forEach(actor => actor.postStep(dt))

@@ -10,16 +10,20 @@ export class Renderer {
   roster = new Roster()
   summary = new Summary()
   interfaceDiv = document.getElementById('interfaceDiv') as HTMLDivElement
-  hues = [120, 240]
+  canvas = document.getElementById('canvas') as HTMLDivElement
+  hues = [120, 220]
   lights = [30, 50]
   unitCircles: UnitCircle[] = []
   trails: TrailCircle[][] = [[], [], [], []]
+  rect: DOMRect
   client: Client
   steps: number
 
   constructor (client: Client) {
     this.client = client
+    this.rect = this.interfaceDiv.getBoundingClientRect()
     this.steps = Math.floor(Unit.recall / Unit.trailStep)
+    console.log('steps', this.steps)
     range(this.steps).forEach(t => {
       range(4).forEach(i => {
         const position = this.roster.spawnPoints[i]
@@ -27,9 +31,9 @@ export class Renderer {
         const hue = this.hues[team]
         const lightness = this.lights[team]
         const color = `hsl(${hue},100%, ${lightness}%)`
-        const scale = 0.5 + 0.5 * t / this.steps
-        const opacity = 0.1 * t / this.steps
-        const trailCircle = new TrailCircle(position, color, scale, opacity)
+        const scale = 1
+        const opacity = 0.5 * t / this.steps
+        const trailCircle = new TrailCircle(this, position, color, scale, opacity)
         this.trails[i].unshift(trailCircle)
       })
     })
@@ -40,12 +44,13 @@ export class Renderer {
       const hue = this.hues[team]
       const lightness = this.lights[team]
       const color = `hsl(${hue},100%, ${lightness}%)`
-      const unitCircle = new UnitCircle(position, color, role)
+      const unitCircle = new UnitCircle(this, position, color, role)
       this.unitCircles.push(unitCircle)
     })
   }
 
   draw (): void {
+    window.requestAnimationFrame(() => this.draw())
     range(4).forEach(i => {
       const unit = this.unitCircles[i]
       unit.position = this.summary.histories[i][0]
@@ -57,6 +62,18 @@ export class Renderer {
         trailCircle.position = this.summary.histories[i][t]
         trailCircle.draw()
       })
+    })
+  }
+
+  onResize (): void {
+    this.rect = this.interfaceDiv.getBoundingClientRect()
+    this.trails.forEach(trail => {
+      trail.forEach(trailCircle => {
+        trailCircle.setup()
+      })
+    })
+    this.unitCircles.forEach(unitCircle => {
+      unitCircle.setup()
     })
   }
 }

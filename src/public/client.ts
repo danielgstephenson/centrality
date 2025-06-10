@@ -13,12 +13,12 @@ export class Client {
       this.checkGameToken(summary)
       console.log('connected')
       this.renderer.summary = summary
+      this.renderer.draw()
       setInterval(() => this.updateServer(), 1000 / 20)
     })
     this.socket.on('update', (summary: Summary) => {
       this.checkGameToken(summary)
       this.renderer.summary = summary
-      this.renderer.draw()
     })
   }
 

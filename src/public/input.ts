@@ -7,11 +7,11 @@ export class Input {
 
   constructor (client: Client) {
     this.client = client
-    this.interfaceDiv.addEventListener('mousedown', (event: MouseEvent) => this.mouseDown(event))
-    window.addEventListener('resize', (event) => this.client.renderer.draw())
+    this.interfaceDiv.addEventListener('mousedown', (event: MouseEvent) => this.onMouseDown(event))
+    window.addEventListener('resize', () => this.client.renderer.onResize())
   }
 
-  mouseDown (event: MouseEvent): void {
+  onMouseDown (event: MouseEvent): void {
     const rect = this.interfaceDiv.getBoundingClientRect()
     const x = Arena.size * (event.clientX - rect.x) / rect.width
     const y = -Arena.size * (event.clientY - rect.y - rect.height) / rect.height
