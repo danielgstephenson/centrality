@@ -20,7 +20,7 @@ export class Game {
       this.players.push(player)
       console.log('connect:', socket.id)
       socket.emit('connected', player.summarize())
-      socket.on('update', (oldTime: number) => {
+      socket.on('update', () => {
         socket.emit('update', player.summarize())
       })
       socket.on('disconnect', () => {
