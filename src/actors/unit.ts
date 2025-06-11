@@ -1,7 +1,7 @@
 import { Circle, Fixture, Vec2 } from 'planck'
-import { Simulation } from '../simulation'
-import { Actor } from './actor'
-import { range } from '../math'
+import { Simulation } from '../simulation.js'
+import { Actor } from './actor.js'
+import { range } from '../math.js'
 
 export class Unit extends Actor {
   static radius = 0.5

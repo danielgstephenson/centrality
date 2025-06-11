@@ -1,5 +1,5 @@
 import { BodyDef, Body } from 'planck'
-import { Simulation } from '../simulation'
+import { Simulation } from '../simulation.js'
 
 export class Actor {
   static count = 0

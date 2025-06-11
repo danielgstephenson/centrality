@@ -1,7 +1,7 @@
-import { choose } from './math'
-import { Player } from './player'
-import { Server } from './server'
-import { Simulation } from './simulation'
+import { choose } from './math.js'
+import { Player } from './player.js'
+import { Server } from './server.js'
+import { Simulation } from './simulation.js'
 
 export class Game {
   server = new Server()

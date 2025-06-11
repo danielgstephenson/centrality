@@ -1,10 +1,10 @@
 import { Vec2, World, Settings } from 'planck'
-import { Actor } from './actors/actor'
-import { Arena } from './actors/arena'
-import { Unit } from './actors/unit'
-import { Game } from './game'
-import { range, runif } from './math'
-import { Roster } from './roster'
+import { Actor } from './actors/actor.js'
+import { Arena } from './actors/arena.js'
+import { Unit } from './actors/unit.js'
+import { Game } from './game.js'
+import { range, runif } from './math.js'
+import { Roster } from './roster.js'
 
 export class Simulation {
   world = new World()

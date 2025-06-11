@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client'
-import { Input } from './input'
-import { Summary } from '../summary'
-import { Renderer } from './renderer'
+import { Input } from './input.js'
+import { Summary } from '../summary.js'
+import { Renderer } from './renderer.js'
 
 export class Client {
   socket = io()

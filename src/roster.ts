@@ -1,5 +1,5 @@
 import { Vec2 } from 'planck'
-import { Arena } from './actors/arena'
+import { Arena } from './actors/arena.js'
 
 export class Roster {
   teams = [0, 0, 1, 1]

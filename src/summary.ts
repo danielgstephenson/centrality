@@ -1,6 +1,6 @@
 import { Vec2 } from 'planck'
-import { range } from './math'
-import { Unit } from './actors/unit'
+import { range } from './math.js'
+import { Unit } from './actors/unit.js'
 
 export class Summary {
   gameToken = ''
@@ -11,8 +11,9 @@ export class Summary {
   histories: Vec2[][] = []
 
   constructor () {
+    const steps = Math.floor(Unit.recall / Unit.trailStep)
     this.histories = range(4).map(_ => {
-      return range(Unit.recall).map(_ => {
+      return range(steps).map(_ => {
         return new Vec2(0, 0)
       })
     })

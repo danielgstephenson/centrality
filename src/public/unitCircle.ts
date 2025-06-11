@@ -1,7 +1,7 @@
-import { Unit } from '../actors/unit'
-import { Arena } from '../actors/arena'
+import { Unit } from '../actors/unit.js'
+import { Arena } from '../actors/arena.js'
 import { Vec2 } from 'planck'
-import { Renderer } from './renderer'
+import { Renderer } from './renderer.js'
 
 export class UnitCircle {
   interfaceDiv = document.getElementById('interfaceDiv') as HTMLDivElement

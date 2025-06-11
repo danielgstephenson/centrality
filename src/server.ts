@@ -2,9 +2,10 @@ import express, { Express } from 'express'
 import http from 'http'
 import https from 'https'
 import fs from 'fs-extra'
-import path from 'path'
+import path, { dirname } from 'path'
 import { Server as SocketIoServer } from 'socket.io'
-import { Config } from './config'
+import { Config } from './config.js'
+import { fileURLToPath } from 'url'
 
 export class Server {
   config: Config
@@ -15,15 +16,16 @@ export class Server {
   constructor () {
     this.config = new Config()
     this.app = express()
-    const dirname = path.dirname(__filename)
-    const staticPath = path.join(dirname, 'public')
+    const filename = fileURLToPath(import.meta.url)
+    const mydirname = dirname(filename)
+    const staticPath = path.join(mydirname, 'public')
     const staticMiddleware = express.static(staticPath)
     this.app.use(staticMiddleware)
-    const clientHtmlPath = path.join(dirname, 'public', 'client.html')
+    const clientHtmlPath = path.join(mydirname, 'public', 'client.html')
     this.app.get('/', function (req, res) { res.sendFile(clientHtmlPath) })
     if (this.config.secure) {
-      const keyPath = path.join(dirname, '../sis-key.pem')
-      const certPath = path.join(dirname, '../sis-cert.pem')
+      const keyPath = path.join(mydirname, '../sis-key.pem')
+      const certPath = path.join(mydirname, '../sis-cert.pem')
       const key = fs.readFileSync(keyPath)
       const cert = fs.readFileSync(certPath)
       const credentials = { key, cert }

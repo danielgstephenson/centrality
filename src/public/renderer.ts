@@ -1,26 +1,36 @@
-import { Unit } from '../actors/unit'
-import { range } from '../math'
-import { Roster } from '../roster'
-import { Summary } from '../summary'
-import { Client } from './client'
-import { TrailCircle } from './trailCircle'
-import { UnitCircle } from './unitCircle'
+import { Unit } from '../actors/unit.js'
+import { range } from '../math.js'
+import { Roster } from '../roster.js'
+import { Summary } from '../summary.js'
+import { Client } from './client.js'
+import { TrailCircle } from './trailCircle.js'
+import { UnitCircle } from './unitCircle.js'
+
+export interface RenderData {
+  offscreen: OffscreenCanvas
+  summary: Summary
+}
 
 export class Renderer {
   roster = new Roster()
   summary = new Summary()
   interfaceDiv = document.getElementById('interfaceDiv') as HTMLDivElement
-  canvas = document.getElementById('canvas') as HTMLDivElement
   hues = [120, 220]
   lights = [30, 50]
   unitCircles: UnitCircle[] = []
   trails: TrailCircle[][] = [[], [], [], []]
-  rect: DOMRect
   client: Client
+  rect: DOMRect
   steps: number
 
   constructor (client: Client) {
     this.client = client
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement
+    const offscreen = canvas.transferControlToOffscreen()
+    const renderData: RenderData = { offscreen, summary: this.summary }
+    const worker = new Worker(new URL('./renderer.worker.ts', import.meta.url), { type: 'module' })
+    worker.postMessage(renderData, [offscreen])
+    this.onResize()
     this.rect = this.interfaceDiv.getBoundingClientRect()
     this.steps = Math.floor(Unit.recall / Unit.trailStep)
     console.log('steps', this.steps)
@@ -76,4 +86,12 @@ export class Renderer {
       unitCircle.setup()
     })
   }
+
+  // resetContext (): void {
+  //   this.context.resetTransform()
+  //   const size = Math.min(this.canvas.width, this.canvas.height)
+  //   this.context.translate(0, size)
+  //   this.context.scale(size / Arena.size, -size / Arena.size)
+  //   this.context.globalAlpha = 1
+  // }
 }

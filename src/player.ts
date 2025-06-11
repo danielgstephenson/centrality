@@ -1,7 +1,7 @@
 import { DefaultEventsMap, Socket } from 'socket.io'
-import { Game } from './game'
-import { Summary } from './summary'
-import { Unit } from './actors/unit'
+import { Game } from './game.js'
+import { Summary } from './summary.js'
+import { Unit } from './actors/unit.js'
 
 type DefaultSocket = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 

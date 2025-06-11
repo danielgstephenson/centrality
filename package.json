@@ -2,6 +2,7 @@
   "name": "graviton",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "scripts": {
     "build:server": "npx tsc -build ./src",
     "build:client": "npx parcel build ./src/public/client.html --dist-dir \"dist/public\"",

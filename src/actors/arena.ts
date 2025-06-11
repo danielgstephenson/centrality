@@ -1,6 +1,6 @@
 import { Chain, Fixture, Vec2 } from 'planck'
-import { Simulation } from '../simulation'
-import { Actor } from './actor'
+import { Simulation } from '../simulation.js'
+import { Actor } from './actor.js'
 
 export class Arena extends Actor {
   static size = 14

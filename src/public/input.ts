@@ -1,5 +1,5 @@
-import { Arena } from '../actors/arena'
-import { Client } from './client'
+import { Arena } from '../actors/arena.js'
+import { Client } from './client.js'
 
 export class Input {
   client: Client
