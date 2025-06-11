@@ -8,7 +8,6 @@ export class Input {
   constructor (client: Client) {
     this.client = client
     this.interfaceDiv.addEventListener('mousedown', (event: MouseEvent) => this.onMouseDown(event))
-    window.addEventListener('resize', () => this.client.renderer.onResize())
   }
 
   onMouseDown (event: MouseEvent): void {

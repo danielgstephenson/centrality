@@ -5,7 +5,7 @@ import { range } from '../math.js'
 
 export class Unit extends Actor {
   static radius = 0.5
-  static recall = 25
+  static recall = 50
   static trailStep = 5
   history: Vec2[] = []
   fixture: Fixture
@@ -42,7 +42,7 @@ export class Unit extends Actor {
     super.postStep(dt)
     const position = this.body.getPosition().clone()
     this.history[0] = position
-    this.history.unshift(position)
-    this.history = this.history.slice(0, Unit.recall)
+    this.history.push(position)
+    this.history = this.history.slice(-Unit.recall)
   }
 }

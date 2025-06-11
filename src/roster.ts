@@ -3,7 +3,7 @@ import { Arena } from './actors/arena.js'
 
 export class Roster {
   teams = [0, 0, 1, 1]
-  roles = [0, 1, 0, 1]
+  roles = [1, 0, 1, 0]
   spawnPoints: Vec2[]
 
   constructor () {

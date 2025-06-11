@@ -1,6 +1,6 @@
 import { Summary } from '../summary'
 
 export interface RenderData {
-  canvas: OffscreenCanvas
-  summary: Summary
+  canvas?: OffscreenCanvas
+  summary?: Summary
 }
