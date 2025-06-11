@@ -3,13 +3,9 @@ import { range } from '../math.js'
 import { Roster } from '../roster.js'
 import { Summary } from '../summary.js'
 import { Client } from './client.js'
+import { RenderData } from './renderData.js'
 import { TrailCircle } from './trailCircle.js'
 import { UnitCircle } from './unitCircle.js'
-
-export interface RenderData {
-  offscreen: OffscreenCanvas
-  summary: Summary
-}
 
 export class Renderer {
   roster = new Roster()
@@ -27,7 +23,7 @@ export class Renderer {
     this.client = client
     const canvas = document.getElementById('canvas') as HTMLCanvasElement
     const offscreen = canvas.transferControlToOffscreen()
-    const renderData: RenderData = { offscreen, summary: this.summary }
+    const renderData: RenderData = { canvas: offscreen, summary: this.summary }
     const worker = new Worker(new URL('./renderer.worker.ts', import.meta.url), { type: 'module' })
     worker.postMessage(renderData, [offscreen])
     this.onResize()
