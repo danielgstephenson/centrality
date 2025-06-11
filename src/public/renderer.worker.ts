@@ -8,7 +8,7 @@ const hues = [120, 220]
 const lights = [30, 50]
 const steps = Math.floor(Unit.recall / Unit.trailStep)
 const roster = new Roster()
-const canvasSize = 512
+const canvasSize = 400
 
 let summary = new Summary()
 
