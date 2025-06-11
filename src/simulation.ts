@@ -24,8 +24,8 @@ export class Simulation {
     Settings.velocityThreshold = 0
     this.makeUnits()
     const velocities = range(4).map(_ => {
-      const x = runif(-1, 1)
-      const y = runif(-1, 1)
+      const x = runif(-3, 3)
+      const y = runif(-3, 3)
       return new Vec2(x, y)
     })
     this.units.forEach((unit, i) => {

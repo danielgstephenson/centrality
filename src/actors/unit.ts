@@ -6,7 +6,7 @@ import { range } from '../math.js'
 export class Unit extends Actor {
   static radius = 0.5
   static recall = 50
-  static trailStep = 5
+  static trailStep = 2
   history: Vec2[] = []
   fixture: Fixture
   team: number
@@ -28,7 +28,7 @@ export class Unit extends Actor {
     this.fixture = this.body.createFixture({
       shape: new Circle(new Vec2(0, 0), Unit.radius),
       friction: 0,
-      restitution: 1
+      restitution: 0.8
     })
     this.fixture.setUserData(this)
     this.body.setMassData({
