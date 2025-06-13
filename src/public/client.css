@@ -27,7 +27,7 @@ body {
   width: 100vmin;
   height: 100vmin;
 }
-#arenaCanvas {
+#trailCanvas {
   background-color: black;
 }
 .canvasLayer {

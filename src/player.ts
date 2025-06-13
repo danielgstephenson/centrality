@@ -21,8 +21,17 @@ export class Player {
     const summary = new Summary()
     summary.gameToken = this.game.token
     summary.simToken = this.game.simulation.token
-    summary.time = this.game.simulation.time
     summary.team = this.team
+    summary.countdown = this.game.simulation.countdown
+    summary.state = this.game.simulation.state
+    summary.score = this.game.simulation.score
+    summary.actives = this.game.teams.map(team => team.active)
+    const action = this.game.simulation.state === 'action'
+    summary.gravitons = this.game.teams.map(team => {
+      const current = action || team.index === this.team
+      if (current) return team.graviton
+      return team.oldGraviton
+    })
     summary.positions = this.game.simulation.units.map(unit => {
       return unit.position
     })

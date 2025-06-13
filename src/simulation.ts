@@ -7,6 +7,8 @@ import { choose, range, rotate, runif } from './math.js'
 import { Roster } from './roster.js'
 
 export class Simulation {
+  static actionCount = 8
+  static planCount = 5
   world = new World()
   actors = new Map<string, Actor>()
   arena = new Arena(this)
@@ -14,9 +16,13 @@ export class Simulation {
   units: Unit[] = []
   token = String(Math.random())
   step = 0
+  paused = true
   time: number
   game: Game
   timeScale: number
+  state = 'action'
+  countdown = Simulation.actionCount
+  score = 0
 
   constructor (game: Game) {
     this.game = game
@@ -50,10 +56,33 @@ export class Simulation {
   tick (): void {
     const oldTime = this.time
     this.time = performance.now() / 1000
+    if (this.paused) return
+    const ready0 = this.game.teams[0].ready
+    const ready1 = this.game.teams[1].ready
+    const ready = ready0 || ready1
+    if (this.state === 'plan' && !ready) return
     const dt = (this.time - oldTime)
+    this.countdown = Math.max(0, this.countdown - dt)
+    this.updateState()
+    if (this.state === 'plan') return
     this.actors.forEach(actor => actor.preStep(dt))
     this.world.step(dt)
     this.actors.forEach(actor => actor.postStep(dt))
     this.step += 1
+  }
+
+  updateState (): void {
+    if (this.countdown > 0) return
+    if (this.state === 'action') {
+      this.state = 'plan'
+      this.countdown = Simulation.planCount
+    } else if (this.state === 'plan') {
+      this.state = 'action'
+      this.countdown = Simulation.actionCount
+      this.game.teams.forEach(team => {
+        team.oldGraviton = team.graviton
+        team.ready = false
+      })
+    }
   }
 }

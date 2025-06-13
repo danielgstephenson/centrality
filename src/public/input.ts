@@ -1,3 +1,4 @@
+import { Vec2 } from 'planck'
 import { Arena } from '../actors/arena.js'
 import { Client } from './client.js'
 
@@ -23,5 +24,6 @@ export class Input {
     const x = Arena.size * (event.clientX - rect.x) / rect.width
     const y = -Arena.size * (event.clientY - rect.y - rect.height) / rect.height
     console.log('mouseDown', x.toFixed(2), y.toFixed(2))
+    this.client.socket.emit('mouseDown', new Vec2(x, y))
   }
 }

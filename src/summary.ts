@@ -1,17 +1,13 @@
 import { Vec2 } from 'planck'
-import { range } from './math.js'
 
 export class Summary {
   gameToken = ''
   simToken = ''
-  time = 0
   team = 0
-  border: Vec2[] = []
-  positions: Vec2[] = []
-
-  constructor () {
-    this.positions = range(4).map(_ => {
-      return new Vec2(0, 0)
-    })
-  }
+  countdown = 1
+  state = 'action'
+  actives = [false, false]
+  positions = [Vec2.zero(), Vec2.zero(), Vec2.zero(), Vec2.zero()]
+  gravitons = [Vec2.zero(), Vec2.zero()]
+  score: number = 0
 }

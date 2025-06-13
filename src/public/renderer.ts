@@ -2,29 +2,32 @@ import { Arena } from '../actors/arena'
 import { Unit } from '../actors/unit'
 import { Roster } from '../roster'
 import { Summary } from '../summary'
+import { Simulation } from '../simulation'
+import { range, rotate } from '../math'
+import { Vec2 } from 'planck'
 
 export class Renderer {
   summary = new Summary()
   canvasSize = 600
-  hues = [100, 200]
+  hues = [200, 100]
   roster = new Roster()
-  arenaCanvas = document.getElementById('arenaCanvas') as HTMLCanvasElement
   trailCanvas = document.getElementById('trailCanvas') as HTMLCanvasElement
   unitCanvas = document.getElementById('unitCanvas') as HTMLCanvasElement
-  arenaContext = this.arenaCanvas.getContext('2d') as CanvasRenderingContext2D
+  hudCanvas = document.getElementById('hudCanvas') as HTMLCanvasElement
   trailContext = this.trailCanvas.getContext('2d') as CanvasRenderingContext2D
   unitContext = this.unitCanvas.getContext('2d') as CanvasRenderingContext2D
+  hudContext = this.hudCanvas.getContext('2d') as CanvasRenderingContext2D
   canvasArray: HTMLCanvasElement[]
   contextArray: CanvasRenderingContext2D[]
 
   constructor () {
     this.contextArray = [
-      this.arenaContext,
+      this.hudContext,
       this.trailContext,
       this.unitContext
     ]
     this.canvasArray = [
-      this.arenaCanvas,
+      this.hudCanvas,
       this.trailCanvas,
       this.unitCanvas
     ]
@@ -36,8 +39,10 @@ export class Renderer {
 
   draw (): void {
     this.resetContext()
-    this.drawTrails()
+    const action = this.summary.state === 'action'
+    if (action) this.drawTrails()
     this.drawUnits()
+    this.drawHud()
   }
 
   drawUnits (): void {
@@ -79,6 +84,80 @@ export class Renderer {
       this.trailContext.arc(x, y, Unit.radius, 0, 2 * Math.PI)
       this.trailContext.fill()
     })
+  }
+
+  drawHud (): void {
+    this.hudContext.clearRect(0, 0, Arena.size, Arena.size)
+    this.drawArena()
+    this.drawTimer()
+    this.drawGravitons()
+  }
+
+  drawGravitons (): void {
+    this.hudContext.globalAlpha = 1
+    this.hudContext.lineWidth = 0.1
+    const radius = 1.2 * Unit.radius
+    range(2).forEach(team => {
+      const active = this.summary.actives[team]
+      if (!active) return
+      const hue = this.hues[team]
+      const color = `hsl(${hue}, 100%, 25%)`
+      this.hudContext.strokeStyle = color
+      this.hudContext.beginPath()
+      const x = this.summary.gravitons[team].x
+      const y = this.summary.gravitons[team].y
+      this.hudContext.arc(x, y, radius, 0, 2 * Math.PI)
+      const diag = rotate(new Vec2(radius, 0), Math.PI / 4)
+      this.hudContext.moveTo(x + diag.x, y + diag.y)
+      this.hudContext.lineTo(x - diag.x, y - diag.y)
+      this.hudContext.moveTo(x - diag.x, y + diag.y)
+      this.hudContext.lineTo(x + diag.x, y - diag.y)
+      this.hudContext.stroke()
+    })
+  }
+
+  drawArena (): void {
+    this.hudContext.globalAlpha = 0.5
+    this.hudContext.strokeStyle = 'hsl(0, 0%, 50%)'
+    this.hudContext.lineWidth = 0.05
+    const size = Arena.size
+    const mid = 0.5 * size
+    const radius = 2 * Unit.radius
+    this.hudContext.beginPath()
+    this.hudContext.moveTo(mid, 0)
+    this.hudContext.lineTo(mid, mid - radius)
+    this.hudContext.moveTo(mid, mid + radius)
+    this.hudContext.lineTo(mid, size)
+    this.hudContext.moveTo(0, mid)
+    this.hudContext.lineTo(mid - radius, mid)
+    this.hudContext.moveTo(mid + radius, mid)
+    this.hudContext.lineTo(size, mid)
+    this.hudContext.stroke()
+    this.hudContext.save()
+    this.hudContext.lineWidth = 0.1
+    this.hudContext.beginPath()
+    this.hudContext.arc(mid, mid, radius, 0, 2 * Math.PI)
+    this.hudContext.clip()
+    this.hudContext.stroke()
+    this.hudContext.restore()
+  }
+
+  drawTimer (): void {
+    this.hudContext.globalAlpha = 0.3
+    const action = this.summary.state === 'action'
+    const root = 1.5 * Math.PI
+    const maxCount = action ? Simulation.actionCount : Simulation.planCount
+    const time = this.summary.countdown / maxCount
+    const turn = action ? 1 - time : time
+    const a = root - Math.PI * turn
+    const b = root + Math.PI * turn
+    this.hudContext.lineWidth = 0.1
+    this.hudContext.beginPath()
+    const size = Arena.size
+    const mid = 0.5 * size
+    const radius = 6 * Unit.radius
+    this.hudContext.arc(mid, mid, radius, a, b)
+    this.hudContext.stroke()
   }
 
   resetContext (): void {

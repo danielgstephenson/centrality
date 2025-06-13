@@ -18,3 +18,13 @@ export function rotate (vector: Vec2, angle: number): Vec2 {
   const y = vector.x * Math.sin(angle) + vector.y * Math.cos(angle)
   return new Vec2(x, y)
 }
+
+export function dirFromTo (from: Vec2, to: Vec2): Vec2 {
+  return normalize(Vec2.sub(to, from))
+}
+
+export function normalize (vector: Vec2): Vec2 {
+  const normalized = vector.clone()
+  normalized.normalize()
+  return normalized
+}
