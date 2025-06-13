@@ -3,7 +3,7 @@ import { Actor } from './actors/actor.js'
 import { Arena } from './actors/arena.js'
 import { Unit } from './actors/unit.js'
 import { Game } from './game.js'
-import { range, runif } from './math.js'
+import { choose, range, rotate, runif } from './math.js'
 import { Roster } from './roster.js'
 
 export class Simulation {
@@ -23,10 +23,13 @@ export class Simulation {
     this.timeScale = this.game.server.config.timeScale
     Settings.velocityThreshold = 0
     this.makeUnits()
-    const velocities = range(4).map(_ => {
-      const x = runif(-1, 1)
-      const y = runif(-1, 1)
-      return new Vec2(x, y)
+    const mid = 0.5 * Arena.size
+    const center = new Vec2(mid, mid)
+    const angle = choose([1, -1]) * runif(Math.PI / 4, Math.PI / 2)
+    const scale = runif(0.01, 0.1)
+    const velocities = this.roster.spawnPoints.map(spawnPoint => {
+      const toCenter = Vec2.sub(center, spawnPoint)
+      return rotate(Vec2.mul(scale, toCenter), angle)
     })
     this.units.forEach((unit, i) => {
       unit.body.setLinearVelocity(velocities[i])

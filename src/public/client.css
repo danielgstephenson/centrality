@@ -23,8 +23,15 @@ body {
   font-size: 3vw;
   pointer-events: none;
 }
-canvas {
+#canvasDiv {
+  width: 100vmin;
+  height: 100vmin;
+}
+#arenaCanvas {
   background-color: black;
+}
+.canvasLayer {
+  position: absolute;
   width: 100vmin;
   height: 100vmin;
   image-rendering: crisp-edges;
