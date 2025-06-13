@@ -15,18 +15,22 @@ export class Game {
   }
 
   setupIo (): void {
+    setInterval(() => this.updatePlayers(), 1000 / 30)
     this.server.io.on('connection', socket => {
       const player = new Player(this, socket)
       this.players.push(player)
       console.log('connect:', socket.id)
       socket.emit('connected', player.summarize())
-      socket.on('update', () => {
-        socket.emit('update', player.summarize())
-      })
       socket.on('disconnect', () => {
         console.log('disconnect:', socket.id)
         this.players = this.players.filter(p => p.id !== socket.id)
       })
+    })
+  }
+
+  updatePlayers (): void {
+    this.players.forEach(player => {
+      player.socket.emit('update', player.summarize())
     })
   }
 

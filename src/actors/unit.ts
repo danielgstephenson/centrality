@@ -28,7 +28,7 @@ export class Unit extends Actor {
     this.fixture = this.body.createFixture({
       shape: new Circle(new Vec2(0, 0), Unit.radius),
       friction: 0,
-      restitution: 0.8
+      restitution: 1
     })
     this.fixture.setUserData(this)
     this.body.setMassData({

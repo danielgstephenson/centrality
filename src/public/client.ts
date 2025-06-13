@@ -19,7 +19,6 @@ export class Client {
       const offscreen = canvas.transferControlToOffscreen()
       const renderData: RenderData = { canvas: offscreen, summary }
       this.worker.postMessage(renderData, [offscreen])
-      setInterval(() => this.updateServer(), 1000 / 30)
     })
     this.socket.on('update', (summary: Summary) => {
       this.checkGameToken(summary)
@@ -27,10 +26,6 @@ export class Client {
       const renderData: RenderData = { summary }
       this.worker.postMessage(renderData)
     })
-  }
-
-  updateServer (): void {
-    this.socket.emit('update')
   }
 
   checkGameToken (summary: Summary): void {
