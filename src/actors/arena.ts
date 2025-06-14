@@ -20,7 +20,7 @@ export class Arena extends Actor {
     this.fixture = this.body.createFixture({
       shape: new Chain(this.vertices, true),
       friction: 0,
-      restitution: 0.1
+      restitution: 1
     })
     this.fixture.setUserData(this)
   }

@@ -93,32 +93,9 @@ export class Renderer {
     this.drawGravitons()
   }
 
-  drawGravitons (): void {
-    this.hudContext.globalAlpha = 1
-    this.hudContext.lineWidth = 0.1
-    const radius = 1.2 * Unit.radius
-    range(2).forEach(team => {
-      const active = this.summary.actives[team]
-      if (!active) return
-      const hue = this.hues[team]
-      const color = `hsl(${hue}, 100%, 25%)`
-      this.hudContext.strokeStyle = color
-      this.hudContext.beginPath()
-      const x = this.summary.gravitons[team].x
-      const y = this.summary.gravitons[team].y
-      this.hudContext.arc(x, y, radius, 0, 2 * Math.PI)
-      const diag = rotate(new Vec2(radius, 0), Math.PI / 4)
-      this.hudContext.moveTo(x + diag.x, y + diag.y)
-      this.hudContext.lineTo(x - diag.x, y - diag.y)
-      this.hudContext.moveTo(x - diag.x, y + diag.y)
-      this.hudContext.lineTo(x + diag.x, y - diag.y)
-      this.hudContext.stroke()
-    })
-  }
-
   drawArena (): void {
-    this.hudContext.globalAlpha = 0.5
-    this.hudContext.strokeStyle = 'hsl(0, 0%, 50%)'
+    this.hudContext.globalAlpha = 0.2
+    this.hudContext.strokeStyle = 'hsl(0, 0%, 100%)'
     this.hudContext.lineWidth = 0.05
     const size = Arena.size
     const mid = 0.5 * size
@@ -143,7 +120,9 @@ export class Renderer {
   }
 
   drawTimer (): void {
-    this.hudContext.globalAlpha = 0.3
+    this.hudContext.globalAlpha = 0.1
+    this.hudContext.strokeStyle = 'hsl(0, 0%, 100%)'
+    this.hudContext.lineWidth = 0.1
     const action = this.summary.state === 'action'
     const root = 1.5 * Math.PI
     const maxCount = action ? Simulation.actionCount : Simulation.planCount
@@ -151,13 +130,35 @@ export class Renderer {
     const turn = action ? 1 - time : time
     const a = root - Math.PI * turn
     const b = root + Math.PI * turn
-    this.hudContext.lineWidth = 0.1
     this.hudContext.beginPath()
     const size = Arena.size
     const mid = 0.5 * size
     const radius = 3 * Unit.centerRadius
     this.hudContext.arc(mid, mid, radius, a, b)
     this.hudContext.stroke()
+  }
+
+  drawGravitons (): void {
+    this.hudContext.globalAlpha = 1
+    this.hudContext.lineWidth = 0.1
+    const radius = 1.2 * Unit.radius
+    range(2).forEach(team => {
+      const active = this.summary.actives[team]
+      if (!active) return
+      const hue = this.hues[team]
+      const color = `hsl(${hue}, 100%, 25%)`
+      this.hudContext.strokeStyle = color
+      this.hudContext.beginPath()
+      const x = this.summary.gravitons[team].x
+      const y = this.summary.gravitons[team].y
+      this.hudContext.arc(x, y, radius, 0, 2 * Math.PI)
+      const diag = rotate(new Vec2(radius, 0), Math.PI / 4)
+      this.hudContext.moveTo(x + diag.x, y + diag.y)
+      this.hudContext.lineTo(x - diag.x, y - diag.y)
+      this.hudContext.moveTo(x - diag.x, y + diag.y)
+      this.hudContext.lineTo(x + diag.x, y - diag.y)
+      this.hudContext.stroke()
+    })
   }
 
   resetContext (): void {

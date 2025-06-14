@@ -22,7 +22,7 @@ export class Simulation {
   time: number
   game: Game
   timeScale: number
-  state = 'action'
+  state = 'plan'
   countdown = Simulation.actionCount
   score = 0
 
@@ -34,7 +34,7 @@ export class Simulation {
     const mid = 0.5 * Arena.size
     const center = new Vec2(mid, mid)
     const angle = choose([1, -1]) * runif(Math.PI / 4, Math.PI / 2)
-    const scale = runif(0.1, 0.2)
+    const scale = 0 // runif(0.1, 0.2)
     const velocities = this.roster.spawnPoints.map(spawnPoint => {
       const toCenter = Vec2.sub(center, spawnPoint)
       return rotate(Vec2.mul(scale, toCenter), angle)
@@ -59,10 +59,10 @@ export class Simulation {
     const oldTime = this.time
     this.time = performance.now() / 1000
     if (this.paused) return
-    const ready0 = this.game.teams[0].ready
-    const ready1 = this.game.teams[1].ready
-    const ready = ready0 || ready1
-    if (this.state === 'plan' && !ready) return
+    // const ready0 = this.game.teams[0].ready
+    // const ready1 = this.game.teams[1].ready
+    // const ready = ready0 || ready1
+    // if (this.state === 'plan' && !ready) return
     const dt = (this.time - oldTime)
     this.countdown = Math.max(0, this.countdown - dt)
     this.updateState()
