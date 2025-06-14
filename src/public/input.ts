@@ -11,6 +11,7 @@ export class Input {
 
   constructor (client: Client) {
     this.client = client
+    document.addEventListener('contextmenu', (event) => event.preventDefault())
     this.canvasDiv.addEventListener('mousedown', (event: MouseEvent) => this.onMouseDown(event))
     window.addEventListener('resize', () => this.onResize())
   }

@@ -5,11 +5,13 @@ import { Unit } from './actors/unit.js'
 import { Game } from './game.js'
 import { choose, range, rotate, runif } from './math.js'
 import { Roster } from './roster.js'
+import { Collider } from './collider.js'
 
 export class Simulation {
-  static actionCount = 8
-  static planCount = 5
+  static actionCount = 3
+  static planCount = 3
   world = new World()
+  collider = new Collider(this.world)
   actors = new Map<string, Actor>()
   arena = new Arena(this)
   roster = new Roster()
@@ -32,7 +34,7 @@ export class Simulation {
     const mid = 0.5 * Arena.size
     const center = new Vec2(mid, mid)
     const angle = choose([1, -1]) * runif(Math.PI / 4, Math.PI / 2)
-    const scale = runif(0.01, 0.1)
+    const scale = runif(0.1, 0.2)
     const velocities = this.roster.spawnPoints.map(spawnPoint => {
       const toCenter = Vec2.sub(center, spawnPoint)
       return rotate(Vec2.mul(scale, toCenter), angle)

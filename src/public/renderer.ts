@@ -122,7 +122,7 @@ export class Renderer {
     this.hudContext.lineWidth = 0.05
     const size = Arena.size
     const mid = 0.5 * size
-    const radius = 2 * Unit.radius
+    const radius = Unit.centerRadius
     this.hudContext.beginPath()
     this.hudContext.moveTo(mid, 0)
     this.hudContext.lineTo(mid, mid - radius)
@@ -155,7 +155,7 @@ export class Renderer {
     this.hudContext.beginPath()
     const size = Arena.size
     const mid = 0.5 * size
-    const radius = 6 * Unit.radius
+    const radius = 3 * Unit.centerRadius
     this.hudContext.arc(mid, mid, radius, a, b)
     this.hudContext.stroke()
   }

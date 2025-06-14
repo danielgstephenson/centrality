@@ -5,12 +5,14 @@ import { dirFromTo } from '../math.js'
 
 export class Unit extends Actor {
   static radius = 0.5
-  history: Vec2[] = []
+  static centerRadius = 1
+  dead = false
   fixture: Fixture
   team: number
   role: number
   spawnPoint: Vec2
   position: Vec2
+  velocity: Vec2
 
   constructor (simulation: Simulation, position: Vec2, team: number, role: number) {
     super(simulation, {
@@ -35,6 +37,15 @@ export class Unit extends Actor {
       I: 1
     })
     this.position = this.body.getPosition().clone()
+    this.velocity = this.body.getLinearVelocity().clone()
+  }
+
+  respawn (): void {
+    this.position = Vec2.zero()
+    this.velocity = this.spawnPoint.clone()
+    this.body.setLinearVelocity(this.position)
+    this.body.setPosition(this.velocity)
+    this.dead = false
   }
 
   preStep (dt: number): void {
@@ -43,7 +54,7 @@ export class Unit extends Actor {
     if (!team.active) return
     const distance = Vec2.distance(this.position, team.graviton)
     const gap = Math.max(Unit.radius, distance)
-    const scale = 1 / (gap * gap)
+    const scale = 1 / gap ** 2
     const toGraviton = dirFromTo(this.position, team.graviton)
     const force = Vec2.mul(scale, toGraviton)
     this.body.applyForceToCenter(force)
@@ -51,6 +62,9 @@ export class Unit extends Actor {
 
   postStep (dt: number): void {
     super.postStep(dt)
+    if (this.dead) this.respawn()
     this.position = this.body.getPosition().clone()
+    this.velocity = Vec2.clamp(this.body.getLinearVelocity().clone(), 4)
+    this.body.setLinearVelocity(this.velocity)
   }
 }
