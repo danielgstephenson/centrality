@@ -17,7 +17,6 @@ export class Collider {
     const fixtureB = contact.getFixtureB()
     const actorA = fixtureA.getUserData() as Actor
     const actorB = fixtureB.getUserData() as Actor
-    // console.log('beginContact', actorA, actorB)
     if (actorA instanceof Unit && actorB instanceof Unit) {
       if (actorA.team === actorB.team) {
         actorA.die()
@@ -30,7 +29,7 @@ export class Collider {
         unit0.die()
         return
       }
-      unit1.dead = true
+      unit1.die()
     }
   }
 
