@@ -3,7 +3,7 @@ import { Unit } from '../actors/unit'
 import { Roster } from '../roster'
 import { Summary } from '../summary'
 import { Simulation } from '../simulation'
-import { range, rotate } from '../math'
+import { dirFromTo, range, rotate } from '../math'
 import { Vec2 } from 'planck'
 
 export class Renderer {
@@ -11,10 +11,12 @@ export class Renderer {
   canvasSize = 600
   hues = [200, 100]
   roster = new Roster()
+  circleDiv1 = document.getElementById('circleDiv1') as HTMLDivElement
+  circleDiv2 = document.getElementById('circleDiv2') as HTMLDivElement
   trailCanvas = document.getElementById('trailCanvas') as HTMLCanvasElement
   unitCanvas = document.getElementById('unitCanvas') as HTMLCanvasElement
   hudCanvas = document.getElementById('hudCanvas') as HTMLCanvasElement
-  trailContext = this.trailCanvas.getContext('2d') as CanvasRenderingContext2D
+  trailContext = this.trailCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
   unitContext = this.unitCanvas.getContext('2d') as CanvasRenderingContext2D
   hudContext = this.hudCanvas.getContext('2d') as CanvasRenderingContext2D
   canvasArray: HTMLCanvasElement[]
@@ -38,6 +40,7 @@ export class Renderer {
   }
 
   draw (): void {
+    this.drawTeamCircles()
     this.resetContext()
     const action = this.summary.state === 'action'
     if (action) this.drawTrails()
@@ -45,8 +48,17 @@ export class Renderer {
     this.drawHud()
   }
 
+  drawTeamCircles (): void {
+    const team = this.summary.team
+    const hue = this.hues[team]
+    const color = `hsla(${hue}, 100%, 50%, 50%)`
+    this.circleDiv1.style.borderColor = color
+    this.circleDiv2.style.borderColor = color
+  }
+
   drawUnits (): void {
     this.unitContext.clearRect(0, 0, Arena.size, Arena.size)
+    this.unitContext.globalAlpha = 1
     this.summary.positions.forEach((position, i) => {
       const team = this.roster.teams[i]
       const role = this.roster.roles[i]
@@ -89,6 +101,7 @@ export class Renderer {
   drawHud (): void {
     this.hudContext.clearRect(0, 0, Arena.size, Arena.size)
     this.drawArena()
+    this.drawStations()
     this.drawTimer()
     this.drawGravitons()
   }
@@ -119,6 +132,25 @@ export class Renderer {
     this.hudContext.restore()
   }
 
+  drawStations (): void {
+    const center = new Vec2(0.5 * Arena.size, 0.5 * Arena.size)
+    this.roster.spawnPoints.forEach((spawnPoint, i) => {
+      const toCenter = dirFromTo(spawnPoint, center)
+      const innerCorner = Vec2.combine(1, spawnPoint, 3 * Unit.radius, toCenter)
+      const outerCorner = Vec2.combine(1, spawnPoint, -3 * Unit.radius, toCenter)
+      const team = this.roster.teams[i]
+      const hue = this.hues[team]
+      this.hudContext.strokeStyle = `hsl(${hue}, 100%, 25%)`
+      this.hudContext.globalAlpha = 0.5
+      this.hudContext.lineWidth = 0.05
+      this.hudContext.beginPath()
+      this.hudContext.moveTo(innerCorner.x, outerCorner.y)
+      this.hudContext.lineTo(innerCorner.x, innerCorner.y)
+      this.hudContext.lineTo(outerCorner.x, innerCorner.y)
+      this.hudContext.stroke()
+    })
+  }
+
   drawTimer (): void {
     this.hudContext.globalAlpha = 0.1
     this.hudContext.strokeStyle = 'hsl(0, 0%, 100%)'
@@ -140,7 +172,7 @@ export class Renderer {
 
   drawGravitons (): void {
     this.hudContext.globalAlpha = 1
-    this.hudContext.lineWidth = 0.1
+    this.hudContext.lineWidth = 0.05
     const radius = 1.2 * Unit.radius
     range(2).forEach(team => {
       const active = this.summary.actives[team]

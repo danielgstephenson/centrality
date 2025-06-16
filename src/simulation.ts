@@ -6,6 +6,7 @@ import { Game } from './game.js'
 import { choose, range, rotate, runif } from './math.js'
 import { Roster } from './roster.js'
 import { Collider } from './collider.js'
+import { Station } from './actors/station.js'
 
 export class Simulation {
   static actionCount = 3
@@ -16,6 +17,7 @@ export class Simulation {
   arena = new Arena(this)
   roster = new Roster()
   units: Unit[] = []
+  stations: Station[] = []
   token = String(Math.random())
   step = 0
   paused = true
@@ -52,6 +54,7 @@ export class Simulation {
       const team = this.roster.teams[i]
       const role = this.roster.roles[i]
       this.units.push(new Unit(this, spawnPoint, team, role))
+      this.stations.push(new Station(this, team, spawnPoint))
     })
   }
 

@@ -8,7 +8,7 @@ body {
   width: 100vw;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
 }
 #cursorDiv {
@@ -35,4 +35,10 @@ body {
   width: 100vmin;
   height: 100vmin;
   image-rendering: crisp-edges;
+}
+.circleDiv {
+  width: calc(20vmax - 20vmin);
+  height: calc(20vmax - 20vmin);
+  border-radius: 50%;
+  border: calc(2vmax - 2vmin) solid grey;
 }

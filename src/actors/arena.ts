@@ -11,6 +11,7 @@ export class Arena extends Actor {
     super(simulation, {
       type: 'static'
     })
+    this.label = 'arena'
     this.vertices = [
       new Vec2(0, 0),
       new Vec2(0, Arena.size),

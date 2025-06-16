@@ -21,6 +21,7 @@ export class Unit extends Actor {
       linearDamping: 0,
       fixedRotation: true
     })
+    this.label = 'unit'
     this.team = team
     this.role = role
     this.spawnPoint = position.clone()
@@ -38,6 +39,10 @@ export class Unit extends Actor {
     })
     this.position = this.body.getPosition().clone()
     this.velocity = this.body.getLinearVelocity().clone()
+  }
+
+  die (): void {
+    this.dead = true
   }
 
   respawn (): void {

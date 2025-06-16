@@ -4,6 +4,7 @@ import { Client } from './client.js'
 
 export class Input {
   client: Client
+  interfaceDiv = document.getElementById('interfaceDiv') as HTMLDivElement
   canvasDiv = document.getElementById('canvasDiv') as HTMLDivElement
   arenaCanvas = document.getElementById('arenaCanvas') as HTMLCanvasElement
   trailCanvas = document.getElementById('trailCanvas') as HTMLCanvasElement
@@ -17,7 +18,12 @@ export class Input {
   }
 
   onResize (): void {
-    // const rect = this.canvasDiv.getBoundingClientRect()
+    const rect = this.interfaceDiv.getBoundingClientRect()
+    if (rect.width > rect.height) {
+      this.interfaceDiv.style.flexDirection = 'row'
+      return
+    }
+    this.interfaceDiv.style.flexDirection = 'column'
   }
 
   onMouseDown (event: MouseEvent): void {
