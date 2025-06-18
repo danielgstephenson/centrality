@@ -39,7 +39,6 @@ export class Client {
   }
 
   checkSimToken (summary: Summary): void {
-    console.log('simToken', this.summary.simToken)
     const oldToken = this.summary.simToken
     const newGame = ![summary.simToken].includes(oldToken)
     if (newGame) {
