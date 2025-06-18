@@ -1,9 +1,9 @@
-import { Vec2 } from 'planck'
 import { choose } from './math.js'
 import { Player } from './player.js'
 import { Server } from './server.js'
 import { Simulation } from './simulation.js'
 import { Team } from './team.js'
+import { Plan } from './messages/plan.js'
 
 export class Game {
   server = new Server()
@@ -24,14 +24,15 @@ export class Game {
       this.players.push(player)
       console.log('connect:', socket.id)
       socket.emit('connected', player.summarize())
-      socket.on('mouseDown', (position: Vec2) => {
+      socket.on('mouseDown', (plan: Plan) => {
         this.simulation.paused = false
         const team = this.teams[player.team]
         if (team == null) return
         if (this.simulation.state === 'action') return
-        team.graviton = position
-        team.active = true
         team.ready = true
+        if (plan.button === 2) return
+        team.active = true
+        team.target = plan.target
       })
       socket.on('disconnect', () => {
         console.log('disconnect:', socket.id)

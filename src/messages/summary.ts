@@ -8,6 +8,6 @@ export class Summary {
   state = 'action'
   actives = [false, false]
   positions = [Vec2.zero(), Vec2.zero(), Vec2.zero(), Vec2.zero()]
-  gravitons = [Vec2.zero(), Vec2.zero()]
-  score: number = 0
+  targets = [Vec2.zero(), Vec2.zero()]
+  scores = [0, 0]
 }

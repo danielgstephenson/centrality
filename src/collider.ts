@@ -12,12 +12,21 @@ export class Collider {
     this.world.on('pre-solve', contact => this.preSolve(contact))
   }
 
-  beginContact (contact: Contact): void {
+  beginContact (contact: Contact): void {}
+
+  preSolve (contact: Contact): void {
     const fixtureA = contact.getFixtureA()
     const fixtureB = contact.getFixtureB()
     const actorA = fixtureA.getUserData() as Actor
     const actorB = fixtureB.getUserData() as Actor
+    if (actorA instanceof Unit && actorB instanceof Station) {
+      if (actorA.team === actorB.team) contact.setEnabled(false)
+    }
+    if (actorA instanceof Station && actorB instanceof Unit) {
+      if (actorA.team === actorB.team) contact.setEnabled(false)
+    }
     if (actorA instanceof Unit && actorB instanceof Unit) {
+      contact.setEnabled(false)
       if (actorA.team === actorB.team) {
         actorA.die()
         actorB.die()
@@ -30,19 +39,6 @@ export class Collider {
         return
       }
       unit1.die()
-    }
-  }
-
-  preSolve (contact: Contact): void {
-    const fixtureA = contact.getFixtureA()
-    const fixtureB = contact.getFixtureB()
-    const actorA = fixtureA.getUserData() as Actor
-    const actorB = fixtureB.getUserData() as Actor
-    if (actorA instanceof Unit && actorB instanceof Station) {
-      if (actorA.team === actorB.team) contact.setEnabled(false)
-    }
-    if (actorA instanceof Station && actorB instanceof Unit) {
-      if (actorA.team === actorB.team) contact.setEnabled(false)
     }
   }
 }

@@ -1,9 +1,9 @@
 import { Arena } from '../actors/arena'
 import { Unit } from '../actors/unit'
 import { Roster } from '../roster'
-import { Summary } from '../summary'
+import { Summary } from '../messages/summary'
 import { Simulation } from '../simulation'
-import { dirFromTo, range, rotate } from '../math'
+import { clamp, dirFromTo, range, rotate } from '../math'
 import { Vec2 } from 'planck'
 
 export class Renderer {
@@ -58,13 +58,12 @@ export class Renderer {
 
   drawUnits (): void {
     this.unitContext.clearRect(0, 0, Arena.size, Arena.size)
-    this.unitContext.globalAlpha = 1
     this.summary.positions.forEach((position, i) => {
       const team = this.roster.teams[i]
       const role = this.roster.roles[i]
       const hue = this.hues[team]
       const color = `hsl(${hue}, 100%, 50%)`
-      this.unitContext.globalAlpha = 1
+      this.unitContext.globalAlpha = 0.4
       this.unitContext.fillStyle = color
       this.unitContext.beginPath()
       const x = position.x
@@ -72,11 +71,19 @@ export class Renderer {
       this.unitContext.arc(x, y, Unit.radius, 0, 2 * Math.PI)
       this.unitContext.fill()
       if (role === 1) return
+      this.unitContext.globalAlpha = 1
       this.unitContext.fillStyle = 'black'
       this.unitContext.beginPath()
       this.unitContext.arc(x, y, 0.6 * Unit.radius, 0, 2 * Math.PI)
       this.unitContext.fill()
     })
+  }
+
+  clearTrails (): void {
+    console.log('clearTrails')
+    this.trailContext.fillStyle = 'black'
+    this.trailContext.globalAlpha = 1
+    this.trailContext.fillRect(0, 0, Arena.size, Arena.size)
   }
 
   drawTrails (): void {
@@ -103,7 +110,8 @@ export class Renderer {
     this.drawArena()
     this.drawStations()
     this.drawTimer()
-    this.drawGravitons()
+    this.drawScores()
+    this.drawTargets()
   }
 
   drawArena (): void {
@@ -112,7 +120,7 @@ export class Renderer {
     this.hudContext.lineWidth = 0.05
     const size = Arena.size
     const mid = 0.5 * size
-    const radius = Unit.centerRadius
+    const radius = Simulation.centerRadius
     this.hudContext.beginPath()
     this.hudContext.moveTo(mid, 0)
     this.hudContext.lineTo(mid, mid - radius)
@@ -152,28 +160,54 @@ export class Renderer {
   }
 
   drawTimer (): void {
+    if (this.summary.state === 'victory') return
     this.hudContext.globalAlpha = 0.1
     this.hudContext.strokeStyle = 'hsl(0, 0%, 100%)'
     this.hudContext.lineWidth = 0.1
     const action = this.summary.state === 'action'
     const root = 1.5 * Math.PI
-    const maxCount = action ? Simulation.actionCount : Simulation.planCount
-    const time = this.summary.countdown / maxCount
+    const maxTime = action ? Simulation.actionTime : Simulation.planTime
+    const time = this.summary.countdown / maxTime
     const turn = action ? 1 - time : time
     const a = root - Math.PI * turn
     const b = root + Math.PI * turn
     this.hudContext.beginPath()
     const size = Arena.size
     const mid = 0.5 * size
-    const radius = 3 * Unit.centerRadius
+    const radius = 3 * Simulation.centerRadius
     this.hudContext.arc(mid, mid, radius, a, b)
     this.hudContext.stroke()
   }
 
-  drawGravitons (): void {
+  drawScores (): void {
+    this.hudContext.globalAlpha = 0.5
+    this.hudContext.lineWidth = 0.05
+    if (this.summary.state === 'victory') {
+      const scale = 1 - this.summary.countdown / Simulation.victoryTime
+      const thick = 2 * Simulation.centerRadius
+      this.hudContext.lineWidth = scale * thick + (1 - scale) * 0.05
+    }
+    const root = 1.5 * Math.PI
+    const mid = 0.5 * Arena.size
+    const radius = 2 * Simulation.centerRadius
+    const score0 = this.summary.scores[0] / Simulation.scoreTime
+    const score1 = this.summary.scores[1] / Simulation.scoreTime
+    if (score0 === score1) return
+    const hue = score0 > score1 ? this.hues[0] : this.hues[1]
+    this.hudContext.strokeStyle = `hsl(${hue}, 100%, 50%)`
+    const difference = clamp(-1, 1, score0 - score1)
+    const angle = root + 2 * Math.PI * difference
+    const a = Math.min(root, angle)
+    const b = Math.max(root, angle)
+    this.hudContext.beginPath()
+    this.hudContext.arc(mid, mid, radius, a, b)
+    this.hudContext.stroke()
+  }
+
+  drawTargets (): void {
     this.hudContext.globalAlpha = 1
     this.hudContext.lineWidth = 0.05
-    const radius = 1.2 * Unit.radius
+    const radius = 0.5 * Unit.radius
     range(2).forEach(team => {
       const active = this.summary.actives[team]
       if (!active) return
@@ -181,8 +215,8 @@ export class Renderer {
       const color = `hsl(${hue}, 100%, 25%)`
       this.hudContext.strokeStyle = color
       this.hudContext.beginPath()
-      const x = this.summary.gravitons[team].x
-      const y = this.summary.gravitons[team].y
+      const x = this.summary.targets[team].x
+      const y = this.summary.targets[team].y
       this.hudContext.arc(x, y, radius, 0, 2 * Math.PI)
       const diag = rotate(new Vec2(radius, 0), Math.PI / 4)
       this.hudContext.moveTo(x + diag.x, y + diag.y)

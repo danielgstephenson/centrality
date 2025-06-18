@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client'
 import { Input } from './input.js'
-import { Summary } from '../summary.js'
+import { Summary } from '../messages/summary.js'
 import { Renderer } from './renderer.js'
 
 export class Client {
@@ -22,6 +22,7 @@ export class Client {
     this.socket.on('update', (summary: Summary) => {
       this.updateTime = performance.now()
       this.checkGameToken(summary)
+      this.checkSimToken(summary)
       this.summary = summary
       this.renderer.summary = summary
       this.renderer.draw()
@@ -34,6 +35,15 @@ export class Client {
     if (reload) {
       console.log('newServer')
       location.reload()
+    }
+  }
+
+  checkSimToken (summary: Summary): void {
+    console.log('simToken', this.summary.simToken)
+    const oldToken = this.summary.simToken
+    const newGame = ![summary.simToken].includes(oldToken)
+    if (newGame) {
+      this.renderer.clearTrails()
     }
   }
 }

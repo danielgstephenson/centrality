@@ -5,7 +5,6 @@ import { dirFromTo } from '../math.js'
 
 export class Unit extends Actor {
   static radius = 0.5
-  static centerRadius = 1.5
   dead = false
   fixture: Fixture
   team: number
@@ -58,11 +57,11 @@ export class Unit extends Actor {
     const team = this.simulation.game.teams[this.team]
     if (!team.active) return
     const allies = this.simulation.units.filter(unit => unit.team === this.team)
-    const distances = allies.map(ally => Vec2.distance(ally.position, team.graviton))
-    const distance = Vec2.distance(this.position, team.graviton)
+    const distances = allies.map(ally => Vec2.distance(ally.position, team.target))
+    const distance = Vec2.distance(this.position, team.target)
     if (distance > Math.min(...distances)) return
-    const toGraviton = dirFromTo(this.position, team.graviton)
-    const force = Vec2.mul(0.2, toGraviton)
+    const toTarget = dirFromTo(this.position, team.target)
+    const force = Vec2.mul(0.2, toTarget)
     this.body.applyForceToCenter(force)
   }
 

@@ -1,6 +1,6 @@
 import { DefaultEventsMap, Socket } from 'socket.io'
 import { Game } from './game.js'
-import { Summary } from './summary.js'
+import { Summary } from './messages/summary.js'
 
 type DefaultSocket = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 
@@ -24,13 +24,13 @@ export class Player {
     summary.team = this.team
     summary.countdown = this.game.simulation.countdown
     summary.state = this.game.simulation.state
-    summary.score = this.game.simulation.score
+    summary.scores = this.game.simulation.scores
     summary.actives = this.game.teams.map(team => team.active)
     const action = this.game.simulation.state === 'action'
-    summary.gravitons = this.game.teams.map(team => {
+    summary.targets = this.game.teams.map(team => {
       const current = action || team.index === this.team
-      if (current) return team.graviton
-      return team.oldGraviton
+      if (current) return team.target
+      return team.oldTarget
     })
     summary.positions = this.game.simulation.units.map(unit => {
       return unit.position
