@@ -112,6 +112,7 @@ export class Simulation {
       this.state = 'action'
       this.countdown = Simulation.actionTime
       this.game.teams.forEach(team => {
+        team.oldActive = team.active
         team.oldTarget = team.target
         team.ready = false
       })
