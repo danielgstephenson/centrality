@@ -3,7 +3,7 @@ import { Simulation } from '../simulation.js'
 import { Actor } from './actor.js'
 
 export class Arena extends Actor {
-  static size = 14
+  static size = 10
   vertices: Vec2[]
   fixture: Fixture
 

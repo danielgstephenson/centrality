@@ -11,7 +11,7 @@ import { Station } from './actors/station.js'
 export class Simulation {
   static actionTime = 3
   static planTime = 3
-  static scoreTime = 20
+  static scoreTime = 15
   static victoryTime = 5
   static centerRadius = 1
   world = new World()
