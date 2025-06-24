@@ -6,7 +6,6 @@ import { Arena } from './arena.js'
 import { dirFromTo } from '../math.js'
 
 export class Station extends Actor {
-  static size = 2
   vertices: Vec2[]
   fixture: Fixture
   team: number

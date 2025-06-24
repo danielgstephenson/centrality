@@ -5,6 +5,7 @@ import { Summary } from '../messages/summary'
 import { Simulation } from '../simulation'
 import { dirFromTo, range, rotate } from '../math'
 import { Vec2 } from 'planck'
+import { Pillar } from '../actors/pillar'
 
 export class Renderer {
   summary = new Summary()
@@ -48,14 +49,15 @@ export class Renderer {
     this.resetContext()
     const action = this.summary.state === 'action'
     if (action) this.drawTrails()
-    this.drawArena()
     this.drawUnits()
+    this.drawArena()
+    this.drawPillars()
     this.drawHud()
   }
 
   drawArena (): void {
     this.arenaContext.clearRect(0, 0, Arena.size, Arena.size)
-    this.arenaContext.globalAlpha = 0.2
+    this.arenaContext.globalAlpha = 0.15
     this.arenaContext.strokeStyle = 'hsl(0, 0%, 100%)'
     this.arenaContext.lineWidth = 0.05
     const size = Arena.size
@@ -78,6 +80,20 @@ export class Renderer {
     this.arenaContext.clip()
     this.arenaContext.stroke()
     this.arenaContext.restore()
+  }
+
+  drawPillars (): void {
+    this.arenaContext.globalAlpha = 0.15
+    this.arenaContext.fillStyle = 'hsl(0, 0%, 100%)'
+    this.roster.spawnPoints.forEach(spawnPoint => {
+      const center = new Vec2(0.5 * Arena.size, 0.5 * Arena.size)
+      const toCenter = dirFromTo(spawnPoint, center)
+      const position = Vec2.combine(1, spawnPoint, 5 * Unit.radius, toCenter)
+      this.arenaContext.beginPath()
+      this.arenaContext.arc(position.x, position.y, Pillar.radius, 0, 2 * Math.PI)
+      this.arenaContext.closePath()
+      this.arenaContext.fill()
+    })
   }
 
   drawTeamCircles (): void {
@@ -130,6 +146,7 @@ export class Renderer {
       this.trailContext.beginPath()
       const x = position.x
       const y = position.y
+      if (x === 0 && y === 0) return
       this.trailContext.arc(x, y, Unit.radius, 0, 2 * Math.PI)
       this.trailContext.fill()
     })

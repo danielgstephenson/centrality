@@ -7,13 +7,15 @@ import { choose, range, rotate, runif } from './math.js'
 import { Roster } from './roster.js'
 import { Collider } from './collider.js'
 import { Station } from './actors/station.js'
+import { Pillar } from './actors/pillar.js'
 
 export class Simulation {
   static actionTime = 3
   static planTime = 3
-  static scoreTime = 15
+  static scoreTime = 60
   static victoryTime = 5
   static centerRadius = 1
+  static blockSize = 1
   world = new World()
   collider = new Collider(this.world)
   actors = new Map<string, Actor>()
@@ -21,6 +23,7 @@ export class Simulation {
   roster = new Roster()
   units: Unit[] = []
   stations: Station[] = []
+  pillars: Pillar[] = []
   token = String(Math.random())
   scores = [0, 0]
   step = 0
@@ -58,6 +61,7 @@ export class Simulation {
       const role = this.roster.roles[i]
       this.units.push(new Unit(this, spawnPoint, team, role))
       this.stations.push(new Station(this, team, spawnPoint))
+      this.pillars.push(new Pillar(this, spawnPoint))
     })
   }
 
