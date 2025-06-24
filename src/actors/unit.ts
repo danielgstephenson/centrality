@@ -5,6 +5,8 @@ import { dirFromTo } from '../math.js'
 
 export class Unit extends Actor {
   static radius = 0.5
+  static maxVelocity = 4
+  static thrust = 0.1
   dead = false
   fixture: Fixture
   team: number
@@ -61,7 +63,7 @@ export class Unit extends Actor {
     const distance = Vec2.distance(this.position, team.target)
     if (distance > Math.min(...distances)) return
     const toTarget = dirFromTo(this.position, team.target)
-    const force = Vec2.mul(0.2, toTarget)
+    const force = Vec2.mul(Unit.thrust, toTarget)
     this.body.applyForceToCenter(force)
   }
 
@@ -69,7 +71,7 @@ export class Unit extends Actor {
     super.postStep(dt)
     if (this.dead) this.respawn()
     this.position = this.body.getPosition().clone()
-    this.velocity = Vec2.clamp(this.body.getLinearVelocity().clone(), 4)
+    this.velocity = Vec2.clamp(this.body.getLinearVelocity().clone(), Unit.maxVelocity)
     this.body.setLinearVelocity(this.velocity)
   }
 }

@@ -138,7 +138,6 @@ export class Renderer {
   drawHud (): void {
     this.hudContext.clearRect(0, 0, Arena.size, Arena.size)
     this.drawStations()
-    this.drawTimer()
     this.drawScores()
     this.drawTargets()
   }
@@ -162,29 +161,9 @@ export class Renderer {
     })
   }
 
-  drawTimer (): void {
-    if (this.summary.state === 'victory') return
-    this.hudContext.globalAlpha = 0.1
-    this.hudContext.strokeStyle = 'hsl(0, 0%, 100%)'
-    this.hudContext.lineWidth = 0.1
-    const action = this.summary.state === 'action'
-    const root = 1.5 * Math.PI
-    const maxTime = action ? Simulation.actionTime : Simulation.planTime
-    const time = this.summary.countdown / maxTime
-    const turn = action ? 1 - time : time
-    const a = root - Math.PI * turn
-    const b = root + Math.PI * turn
-    this.hudContext.beginPath()
-    const size = Arena.size
-    const mid = 0.5 * size
-    const radius = 3 * Simulation.centerRadius
-    this.hudContext.arc(mid, mid, radius, a, b)
-    this.hudContext.stroke()
-  }
-
   drawScores (): void {
     this.hudContext.globalAlpha = 0.5
-    const radius = 2 * Simulation.centerRadius
+    const radius = 2.5 * Simulation.centerRadius
     const maxScore = Math.max(...this.summary.scores)
     this.summary.scores.forEach((score, i) => {
       const hue = this.hues[i]
@@ -192,7 +171,7 @@ export class Renderer {
       this.hudContext.lineWidth = 0.05
       if (this.summary.state === 'victory' && score === maxScore) {
         const scale = 1 - this.summary.countdown / Simulation.victoryTime
-        const thick = 2 * Simulation.centerRadius
+        const thick = 2 * (radius - Simulation.centerRadius)
         this.hudContext.lineWidth = scale * thick + (1 - scale) * 0.05
       }
       const root = 1.5 * Math.PI
