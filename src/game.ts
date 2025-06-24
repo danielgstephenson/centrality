@@ -28,9 +28,7 @@ export class Game {
         this.simulation.paused = false
         const team = this.teams[player.team]
         if (team == null) return
-        if (this.simulation.state === 'action') return
         team.ready = true
-        if (plan.button === 2) return
         team.active = true
         team.target = plan.target
       })

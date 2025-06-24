@@ -3,7 +3,7 @@ import { Unit } from '../actors/unit'
 import { Roster } from '../roster'
 import { Summary } from '../messages/summary'
 import { Simulation } from '../simulation'
-import { clamp, dirFromTo, range, rotate } from '../math'
+import { dirFromTo, range, rotate } from '../math'
 import { Vec2 } from 'planck'
 
 export class Renderer {
@@ -184,27 +184,28 @@ export class Renderer {
 
   drawScores (): void {
     this.hudContext.globalAlpha = 0.5
-    this.hudContext.lineWidth = 0.05
-    if (this.summary.state === 'victory') {
-      const scale = 1 - this.summary.countdown / Simulation.victoryTime
-      const thick = 2 * Simulation.centerRadius
-      this.hudContext.lineWidth = scale * thick + (1 - scale) * 0.05
-    }
-    const root = 1.5 * Math.PI
-    const mid = 0.5 * Arena.size
     const radius = 2 * Simulation.centerRadius
-    const score0 = this.summary.scores[0] / Simulation.scoreTime
-    const score1 = this.summary.scores[1] / Simulation.scoreTime
-    if (score0 === score1) return
-    const hue = score0 > score1 ? this.hues[0] : this.hues[1]
-    this.hudContext.strokeStyle = `hsl(${hue}, 100%, 50%)`
-    const difference = clamp(-1, 1, score0 - score1)
-    const angle = root + 2 * Math.PI * difference
-    const a = Math.min(root, angle)
-    const b = Math.max(root, angle)
-    this.hudContext.beginPath()
-    this.hudContext.arc(mid, mid, radius, a, b)
-    this.hudContext.stroke()
+    const maxScore = Math.max(...this.summary.scores)
+    this.summary.scores.forEach((score, i) => {
+      const hue = this.hues[i]
+      this.hudContext.strokeStyle = `hsl(${hue}, 100%, 50%)`
+      this.hudContext.lineWidth = 0.05
+      if (this.summary.state === 'victory' && score === maxScore) {
+        const scale = 1 - this.summary.countdown / Simulation.victoryTime
+        const thick = 2 * Simulation.centerRadius
+        this.hudContext.lineWidth = scale * thick + (1 - scale) * 0.05
+      }
+      const root = 1.5 * Math.PI
+      const mid = 0.5 * Arena.size
+      const scoreSign = i === 0 ? 1 : -1
+      const scoreFraction = score / Simulation.scoreTime
+      const angle = root + scoreSign * Math.PI * scoreFraction
+      const a = Math.min(root, angle)
+      const b = Math.max(root, angle)
+      this.hudContext.beginPath()
+      this.hudContext.arc(mid, mid, radius, a, b)
+      this.hudContext.stroke()
+    })
   }
 
   drawTargets (): void {

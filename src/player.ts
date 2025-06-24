@@ -25,17 +25,8 @@ export class Player {
     summary.countdown = this.game.simulation.countdown
     summary.state = this.game.simulation.state
     summary.scores = this.game.simulation.scores
-    summary.actives = this.game.teams.map(team => {
-      const current = team.index === this.team
-      if (current) return team.active
-      return team.oldActive
-    })
-    const action = this.game.simulation.state === 'action'
-    summary.targets = this.game.teams.map(team => {
-      const current = action || team.index === this.team
-      if (current) return team.target
-      return team.oldTarget
-    })
+    summary.actives = this.game.teams.map(team => team.active)
+    summary.targets = this.game.teams.map(team => team.target)
     summary.positions = this.game.simulation.units.map(unit => {
       return unit.position
     })

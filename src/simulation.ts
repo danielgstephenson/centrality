@@ -28,8 +28,8 @@ export class Simulation {
   time: number
   game: Game
   timeScale: number
-  state = 'plan'
-  countdown = Simulation.actionTime
+  state = 'action'
+  countdown = Simulation.victoryTime
 
   constructor (game: Game) {
     this.game = game
@@ -65,15 +65,12 @@ export class Simulation {
     const oldTime = this.time
     this.time = performance.now() / 1000
     if (this.paused) return
-    const ready0 = this.game.teams[0].ready
-    const ready1 = this.game.teams[1].ready
-    const ready = ready0 || ready1
-    if (this.state === 'plan' && !ready) return
     const dt = (this.time - oldTime)
-    this.countdown = Math.max(0, this.countdown - dt)
-    this.updateState()
-    if (this.state === 'victory') return
-    if (this.state === 'plan') return
+    if (this.state === 'victory') {
+      if (this.countdown === 0) this.restart()
+      this.countdown = Math.max(0, this.countdown - dt)
+      return
+    }
     this.actors.forEach(actor => actor.preStep(dt))
     this.world.step(dt)
     this.actors.forEach(actor => actor.postStep(dt))
@@ -82,8 +79,7 @@ export class Simulation {
     if (centerCounts[0] === centerCounts[1]) return
     const strongTeam = centerCounts[0] > centerCounts[1] ? 0 : 1
     this.scores[strongTeam] += dt
-    const difference = Math.abs(this.scores[0] - this.scores[1])
-    if (difference > Simulation.scoreTime) {
+    if (Math.max(...this.scores) >= Simulation.scoreTime) {
       this.state = 'victory'
       this.countdown = Simulation.victoryTime
     }
@@ -101,24 +97,6 @@ export class Simulation {
     this.scores = [0, 0]
     this.state = 'action'
     this.countdown = Simulation.actionTime
-  }
-
-  updateState (): void {
-    if (this.countdown > 0) return
-    if (this.state === 'action') {
-      this.state = 'plan'
-      this.countdown = Simulation.planTime
-    } else if (this.state === 'plan') {
-      this.state = 'action'
-      this.countdown = Simulation.actionTime
-      this.game.teams.forEach(team => {
-        team.oldActive = team.active
-        team.oldTarget = team.target
-        team.ready = false
-      })
-    } else if (this.state === 'victory') {
-      this.restart()
-    }
   }
 
   getCenterCounts (): number[] {
